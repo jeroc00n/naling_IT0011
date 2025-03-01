@@ -5,7 +5,7 @@ age = input("Enter your age: ")
 fullname = firstname + " " + lastname
 sliced = firstname[:3]
 
-message = f"Hello, {sliced}! Welcome. You are {age} years old."
+message = "Hello, {}! Welcome. You are {} years old.".format(sliced, age)
 
 print("\nFull Name: ", fullname)
 print("Sliced Name: ", sliced)
