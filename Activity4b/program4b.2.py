@@ -1,4 +1,4 @@
-file_path = "/mnt/data/currency.csv"
+file_path = "Activity4b/currency.csv"
 
 exchange_rates = {}
 with open(file_path, "r") as file:
