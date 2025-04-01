@@ -100,35 +100,131 @@ class SignUpForm(tk.Toplevel):
         self.configure(bg='#D8BFD8')
         self.onSubmit = onSubmit
         
-        # Form fields
-        tk.Label(self, text="First Name:", bg='#D8BFD8').pack(pady=5)
-        self.first_name = tk.Entry(self)
+        # Validation functions
+        self.validate_alpha = (self.register(self._validate_alpha), '%P')
+        
+        # Main container frame
+        form_frame = tk.Frame(self, bg='#D8BFD8')
+        form_frame.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)
+        
+        # First Name (alphabetic only)
+        tk.Label(form_frame, text="First Name:", bg='#D8BFD8').pack(pady=5)
+        self.first_name = tk.Entry(form_frame, validate="key", validatecommand=self.validate_alpha)
         self.first_name.pack(pady=5)
         
-        tk.Label(self, text="Middle Name:", bg='#D8BFD8').pack(pady=5)
-        self.middle_name = tk.Entry(self)
+        # Middle Name (alphabetic only, optional)
+        tk.Label(form_frame, text="Middle Name:", bg='#D8BFD8').pack(pady=5)
+        self.middle_name = tk.Entry(form_frame, validate="key", validatecommand=self.validate_alpha)
         self.middle_name.pack(pady=5)
         
-        tk.Label(self, text="Last Name:", bg='#D8BFD8').pack(pady=5)
-        self.last_name = tk.Entry(self)
+        # Last Name (alphabetic only)
+        tk.Label(form_frame, text="Last Name:", bg='#D8BFD8').pack(pady=5)
+        self.last_name = tk.Entry(form_frame, validate="key", validatecommand=self.validate_alpha)
         self.last_name.pack(pady=5)
         
-        tk.Label(self, text="Birthday (YYYY-MM-DD):", bg='#D8BFD8').pack(pady=5)
-        self.birthday = tk.Entry(self)
+        # Birthday (YYYY-MM-DD format) with auto-formatting
+        tk.Label(form_frame, text="Birthday (YYYY-MM-DD):", bg='#D8BFD8').pack(pady=5)
+        self.birthday = tk.Entry(form_frame)
         self.birthday.pack(pady=5)
+        self.birthday.bind('<KeyRelease>', self._format_date_input)
         
-        tk.Label(self, text="Gender:", bg='#D8BFD8').pack(pady=5)
-        self.gender = ttk.Combobox(self, values=["Male", "Female", "Other"])
+        # Gender (dropdown with only 3 options)
+        tk.Label(form_frame, text="Gender:", bg='#D8BFD8').pack(pady=5)
+        self.gender = ttk.Combobox(form_frame, 
+                                 values=["Male", "Female", "Other"],
+                                 state="readonly")  # Prevent typing
+        self.gender.set("Male")  # Default value
         self.gender.pack(pady=5)
         
-        tk.Button(self, text="Submit", bg='#6F4685', fg='white', command=self._submit).pack(pady=20)
+        # Submit button 
+        submit_btn = tk.Button(
+            form_frame,
+            text="Submit",
+            command=self._submit,
+            bg='#6F4685',  
+            fg='white',
+            padx=10,
+            pady=5
+        )
+        submit_btn.pack(pady=20)
+        
+        # Error message display
+        self.error_label = tk.Label(form_frame, text="", fg="red", bg='#D8BFD8')
+        self.error_label.pack()
+
+    def _validate_alpha(self, text):
+        """Validate that text contains only alphabetic characters and spaces"""
+        if text == "":  # Allow empty field (for middle name)
+            return True
+        return text.replace(" ", "").isalpha()  # Allows spaces between names
+
+    def _format_date_input(self, event):
+        """Automatically format date input with hyphens"""
+        current_text = self.birthday.get()
+        
+        if not current_text:
+            return
+        
+        # Remove any existing hyphens for processing
+        clean_text = current_text.replace('-', '')
+        
+        # Rebuild with hyphens in correct positions
+        formatted = []
+        for i, char in enumerate(clean_text):
+            if i == 4 or i == 6:  # Positions for hyphens
+                formatted.append('-')
+            formatted.append(char)
+            if len(formatted) >= 10:  # Limit to YYYY-MM-DD format
+                break
+        
+        new_text = ''.join(formatted)
+        if new_text != current_text:
+            self.birthday.delete(0, tk.END)
+            self.birthday.insert(0, new_text)
+
+    def _validate_form(self):
+        """Validate all fields before submission"""
+        errors = []
+        
+        # Validate names
+        if not self.first_name.get().strip():
+            errors.append("First name is required")
+        elif not self.first_name.get().replace(" ", "").isalpha():
+            errors.append("First name must contain only letters")
+            
+        if self.middle_name.get() and not self.middle_name.get().replace(" ", "").isalpha():
+            errors.append("Middle name must contain only letters")
+            
+        if not self.last_name.get().strip():
+            errors.append("Last name is required")
+        elif not self.last_name.get().replace(" ", "").isalpha():
+            errors.append("Last name must contain only letters")
+            
+        # Validate date format
+        date_str = self.birthday.get()
+        if len(date_str) != 10 or date_str[4] != '-' or date_str[7] != '-':
+            errors.append("Birthday must be in YYYY-MM-DD format")
+        else:
+            try:
+                datetime.strptime(date_str, "%Y-%m-%d")
+            except ValueError:
+                errors.append("Please enter a valid date")
+            
+        if errors:
+            self.error_label.config(text="\n".join(errors))
+            return False
+        self.error_label.config(text="")
+        return True
 
     def _submit(self):
-        """Handle form submission"""
+        """Handle form submission with validation"""
+        if not self._validate_form():
+            return
+            
         client = {
-            'first_name': self.first_name.get(),
-            'middle_name': self.middle_name.get(),
-            'last_name': self.last_name.get(),
+            'first_name': self.first_name.get().strip(),
+            'middle_name': self.middle_name.get().strip(),
+            'last_name': self.last_name.get().strip(),
             'birthday': self.birthday.get(),
             'gender': self.gender.get()
         }
