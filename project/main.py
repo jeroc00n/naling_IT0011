@@ -47,8 +47,14 @@ class ClientDatabase:
             required = ['first_name', 'last_name', 'birthday', 'gender']
             if not all(field in client_data for field in required):
                 raise ValueError("Missing required fields")
+            
+            if not self.records:
+                new_id = 1
+            else:
+                existing_ids = {r['id'] for r in self.records}
+                new_id = max(existing_ids) + 1
 
-            client_data['id'] = len(self.records) + 1
+            client_data['id'] = new_id
             client_data['created_at'] = datetime.now().isoformat()
             
             self.records.append(client_data)
