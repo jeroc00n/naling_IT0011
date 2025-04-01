@@ -31,17 +31,6 @@ class SignUpForm(tk.Toplevel):
         # Header with image
         header_frame = tk.Frame(self, bg="#2c3e50")
         header_frame.pack(fill=tk.X, padx=10, pady=10)
-        
-        try:
-            # This would be replaced with actual image path in your project
-            img = Image.open("assets/signup.png") if os.path.exists("assets/signup.png") else None
-            if img:
-                img = img.resize((50, 50), Image.Resampling.LANCZOS)
-                self.signup_img = ImageTk.PhotoImage(img)
-                img_label = tk.Label(header_frame, image=self.signup_img, bg="#2c3e50")
-                img_label.pack(side=tk.LEFT, padx=10)
-        except Exception as e:
-            print(f"Error loading image: {e}")
 
         header_label = tk.Label(
             header_frame, 

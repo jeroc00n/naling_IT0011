@@ -91,30 +91,31 @@ class SignUpForm(tk.Toplevel):
         super().__init__(parent)
         self.title("Client Registration")
         self.geometry("400x500")
+        self.configure(bg='#D8BFD8')
         self.onSubmit = onSubmit
         
         # Form fields
-        tk.Label(self, text="First Name:").pack(pady=5)
+        tk.Label(self, text="First Name:", bg='#D8BFD8').pack(pady=5)
         self.first_name = tk.Entry(self)
         self.first_name.pack(pady=5)
         
-        tk.Label(self, text="Middle Name:").pack(pady=5)
+        tk.Label(self, text="Middle Name:", bg='#D8BFD8').pack(pady=5)
         self.middle_name = tk.Entry(self)
         self.middle_name.pack(pady=5)
         
-        tk.Label(self, text="Last Name:").pack(pady=5)
+        tk.Label(self, text="Last Name:", bg='#D8BFD8').pack(pady=5)
         self.last_name = tk.Entry(self)
         self.last_name.pack(pady=5)
         
-        tk.Label(self, text="Birthday (YYYY-MM-DD):").pack(pady=5)
+        tk.Label(self, text="Birthday (YYYY-MM-DD):", bg='#D8BFD8').pack(pady=5)
         self.birthday = tk.Entry(self)
         self.birthday.pack(pady=5)
         
-        tk.Label(self, text="Gender:").pack(pady=5)
+        tk.Label(self, text="Gender:", bg='#D8BFD8').pack(pady=5)
         self.gender = ttk.Combobox(self, values=["Male", "Female", "Other"])
         self.gender.pack(pady=5)
         
-        tk.Button(self, text="Submit", command=self._submit).pack(pady=20)
+        tk.Button(self, text="Submit", bg='#6F4685', fg='white', command=self._submit).pack(pady=20)
 
     def _submit(self):
         """Handle form submission"""
@@ -134,6 +135,7 @@ class RecordsView(tk.Toplevel):
         super().__init__(parent)
         self.title("View All Records")
         self.geometry("800x600")
+        self.configure(bg='#D8BFD8')
         self.db = db
         self._setup_ui(records)
         self._center_window()
@@ -150,16 +152,15 @@ class RecordsView(tk.Toplevel):
     def _setup_ui(self, records: List[Dict]):
         """Set up the user interface"""
         # Header
-        header_frame = tk.Frame(self, bg="#3498db")
+        header_frame = tk.Frame(self, bg="#6F4685")
         header_frame.pack(fill=tk.X, padx=10, pady=10)
         
         try:
-            # This would be replaced with actual image path in your project
-            img = Image.open("assets/records.png") if os.path.exists("assets/records.png") else None
+            img = Image.open("project/assets/logo.png") if os.path.exists("project/assets/records.png") else None
             if img:
                 img = img.resize((50, 50), Image.Resampling.LANCZOS)
                 self.records_img = ImageTk.PhotoImage(img)
-                img_label = tk.Label(header_frame, image=self.records_img, bg="#3498db")
+                img_label = tk.Label(header_frame, image=self.records_img, bg="#6F4685")
                 img_label.pack(side=tk.LEFT, padx=10)
         except Exception as e:
             print(f"Error loading image: {e}")
@@ -169,19 +170,17 @@ class RecordsView(tk.Toplevel):
             text="Client Records", 
             font=("Arial", 16, "bold"), 
             fg="white", 
-            bg="#3498db"
+            bg="#6F4685"
         )
         header_label.pack(side=tk.LEFT, pady=10)
 
-        # Treeview for records
         tree_frame = tk.Frame(self)
         tree_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        # Add a button frame at the bottom
-        button_frame = tk.Frame(self)
+        button_frame = tk.Frame(self, bg='#D8BFD8')
         button_frame.pack(fill=tk.X, padx=10, pady=10)
 
-        if self.db:  # Only show delete button if we have a database reference
+        if self.db:  
             delete_btn = tk.Button(
                 button_frame, 
                 text="Delete Selected", 
@@ -207,9 +206,9 @@ class RecordsView(tk.Toplevel):
         # Configure columns
         self.tree.column("#0", width=0, stretch=tk.NO)
         self.tree.column("ID", width=50, anchor=tk.CENTER)
-        self.tree.column("First Name", width=150, anchor=tk.W)
-        self.tree.column("Middle Name", width=150, anchor=tk.W)
-        self.tree.column("Last Name", width=150, anchor=tk.W)
+        self.tree.column("First Name", width=150, anchor=tk.CENTER)
+        self.tree.column("Middle Name", width=150, anchor=tk.CENTER)
+        self.tree.column("Last Name", width=150, anchor=tk.CENTER)
         self.tree.column("Birthday", width=100, anchor=tk.CENTER)
         self.tree.column("Gender", width=80, anchor=tk.CENTER)
 
@@ -242,7 +241,7 @@ class RecordsView(tk.Toplevel):
             return
 
         item_data = self.tree.item(selected_item)
-        record_id = item_data['values'][0]  # Get ID from the first column
+        record_id = item_data['values'][0]  
 
         if messagebox.askyesno("Confirm Delete", "Are you sure you want to delete this record?"):
             if self.db.delete_client(record_id):
@@ -258,19 +257,20 @@ class SearchForm(tk.Toplevel):
         super().__init__(parent)
         self.title("Search Clients")
         self.geometry("400x300")
+        self.configure(bg='#D8BFD8')
         self.onSearch = onSearch
         
-        tk.Label(self, text="Search Term:").pack(pady=10)
+        tk.Label(self, text="Search Term:", bg='#D8BFD8').pack(pady=10)
         self.term = tk.Entry(self)
         self.term.pack(pady=10)
         
-        tk.Label(self, text="Search Field:").pack(pady=10)
+        tk.Label(self, text="Search Field:", bg='#D8BFD8').pack(pady=10)
         self.field = ttk.Combobox(self, 
                                 values=["first_name", "last_name", "birthday", "gender"])
         self.field.set("first_name")
         self.field.pack(pady=10)
         
-        tk.Button(self, text="Search", command=self._search).pack(pady=20)
+        tk.Button(self, text="Search", bg="#6F4685", fg= 'white', command=self._search).pack(pady=20)
 
     def _search(self):
         """Execute search"""
@@ -285,7 +285,8 @@ class ClientRecordApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Aster/Risk Management System")
-        self.root.geometry("600x400")
+        self.root.geometry("450x600")
+        self.root.configure(bg='#D8BFD8')
         
         # Initialize database
         self.db = ClientDatabase()
@@ -295,35 +296,59 @@ class ClientRecordApp:
 
     def _setup_ui(self):
         """Create main interface"""
-        # Header with logo
-        header = tk.Frame(self.root, bg="#2c3e50", height=80)
+        # Header with title
+        header = tk.Frame(self.root, bg="#6F4685", height=70)
         header.pack(fill=tk.X)
         
+        
+        tk.Label(header, text="Aster/Risk Management", 
+                font=("Times New Roman", 14), fg="white", bg="#6F4685").pack(side=tk.LEFT)
+        
+        main_container = tk.Frame(self.root, bg='#D8BFD8')
+        main_container.pack(expand=True, fill=tk.BOTH)
+        
         try:
-            img = Image.open("assets/logo.png").resize((60, 60))
+            img = Image.open("project/assets/logo.png").resize((150, 150))
             self.logo = ImageTk.PhotoImage(img)
-            tk.Label(header, image=self.logo, bg="#2c3e50").pack(side=tk.LEFT, padx=10)
+            logo_frame = tk.Frame(main_container, bg='#D8BFD8')
+            logo_frame.pack(pady=(0, 30))
+            tk.Label(main_container, image=self.logo, bg="#D8BFD8").pack()
         except:
             pass
         
-        tk.Label(header, text="Aster/Risk Management", 
-                font=("Times New Roman", 16), fg="white", bg="#2c3e50").pack(side=tk.LEFT)
-        
-        # Main buttons
-        buttons = tk.Frame(self.root)
-        buttons.pack(pady=50)
+        button_frame = tk.Frame(main_container, bg='#D8BFD8')
+        button_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         
         btn_data = [
-            ("Register Client", "#27ae60", self._open_signup),
-            ("View All Records", "#3498db", self._view_records),
-            ("Search Records", "#e67e22", self._open_search),
-            ("Exit", "#e74c3c", self.root.quit)
+            ("Register Client", "#5D3F6A", self._open_signup),
+            ("View All Records", "#6F4685", self._view_records),
+            ("Search Records", "#9867C5", self._open_search),
+            ("Exit", "#9E7BB5", self.root.quit)
         ]
         
+        btn_style = {
+        'font': ('Arial', 10, 'bold'),
+        'width': 15,
+        'height': 1,
+        'bd': 0,  
+        'relief': tk.RAISED,
+        'activebackground': '#555555',  
+        'activeforeground': 'white',
+        'padx': 5,
+        'pady':5
+    }
+        
         for text, color, cmd in btn_data:
-            btn = tk.Button(buttons, text=text, bg=color, fg="white",
-                           width=20, height=2, command=cmd)
-            btn.pack(pady=10)
+            btn = tk.Button(
+            button_frame,
+            text=text,
+            bg=color,
+            fg="white",
+            command=cmd,
+            **btn_style
+        )
+            btn.pack(pady=13, fill=tk.X)  
+        
 
     def _open_signup(self):
         """Open registration form"""
